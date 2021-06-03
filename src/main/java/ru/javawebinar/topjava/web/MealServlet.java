@@ -57,7 +57,7 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/edit.jsp").forward(request, response);
                 break;
             case "create":
-                Meal meal1 = new Meal(LocalDateTime.now(), "", 0);
+                Meal meal1 = new Meal(LocalDateTime.now().withNano(0).withSecond(0), "", 0);
                 request.setAttribute("meal", meal1);
                 request.getRequestDispatcher("/edit.jsp").forward(request, response);
                 break;
