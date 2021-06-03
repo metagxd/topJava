@@ -22,7 +22,7 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public synchronized boolean save(Meal meal) {
         try {
-            log.debug("saving {} ", meal.getDateTime());
+            log.debug("saving {} ", meal.getId());
             meal.setId(++id);
             repo.put(meal.getId(), meal);
             return true;
@@ -34,7 +34,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean update(Meal meal) {
-        log.debug("saving {}", meal.getId());
+        log.debug("updating {}", meal.getId());
         if (repo.containsKey(meal.getId())) {
             repo.replace(meal.getId(), meal);
             return true;
