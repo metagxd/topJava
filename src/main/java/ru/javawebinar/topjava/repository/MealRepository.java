@@ -8,7 +8,7 @@ public interface MealRepository {
 
     boolean save(Meal meal);
 
-    boolean ubdate(Meal meal);
+    boolean update(Meal meal);
 
     boolean delete(int id);
 
