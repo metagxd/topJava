@@ -19,8 +19,8 @@ import java.util.List;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
-    private static final int SUM_OF_CALORIES = 2000;
     private final MealRepository mealRepository = new InMemoryMealRepository();
+    private static final int SUM_OF_CALORIES = 2000;
 
     @Override
     public void init() throws ServletException {
@@ -38,27 +38,28 @@ public class MealServlet extends HttpServlet {
                 int mealId = Integer.parseInt(request.getParameter("mealId"));
                 log.debug("delete {}", mealId);
                 mealRepository.delete(mealId);
-                response.sendRedirect("meals");
                 break;
             case "edit":
                 mealId = Integer.parseInt(request.getParameter("mealId"));
                 Meal meal = mealRepository.getById(mealId);
                 log.debug("edit {}", mealId);
-                request.setAttribute("meal", meal);
-                request.getRequestDispatcher("/edit.jsp").forward(request, response);
-                break;
+                editOrCreate(request, response, meal);
+                return;
             case "create":
                 Meal meal1 = new Meal(LocalDateTime.now().withNano(0).withSecond(0), "", 0);
                 log.debug("create new meal");
-                request.setAttribute("meal", meal1);
-                request.getRequestDispatcher("/edit.jsp").forward(request, response);
-                break;
-            default:
-                log.debug("response with meal list");
-                List<MealTo> mealToList = MealsUtil.filteredByStreams(mealRepository.getAll(), LocalTime.MIN, LocalTime.MAX, SUM_OF_CALORIES);
-                request.setAttribute("mealList", mealToList);
-                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                editOrCreate(request, response, meal1);
+                return;
         }
+        log.debug("response with meal list");
+        List<MealTo> mealToList = MealsUtil.filteredByStreams(mealRepository.getAll(), LocalTime.MIN, LocalTime.MAX, SUM_OF_CALORIES);
+        request.setAttribute("mealList", mealToList);
+        request.getRequestDispatcher("/meals.jsp").forward(request, response);
+    }
+
+    private void editOrCreate(HttpServletRequest request, HttpServletResponse response, Meal meal) throws ServletException, IOException {
+        request.setAttribute("meal", meal);
+        request.getRequestDispatcher("/edit.jsp").forward(request, response);
     }
 
     @Override
