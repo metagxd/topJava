@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class InMemoryMealRepository implements MealRepository {
-    private int id = 0;
     private static final Logger log = getLogger(InMemoryMealRepository.class);
     Map<Integer, Meal> repo = new HashMap<>();
+    private int id = 0;
 
     public InMemoryMealRepository() {
 
