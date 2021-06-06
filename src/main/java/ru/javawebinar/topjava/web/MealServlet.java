@@ -74,7 +74,7 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        if ("reset".equals(request.getParameter("button"))) {
+        if ("cancel".equals(request.getParameter("cancelButton"))) {
             response.sendRedirect("meals");
             return;
         }

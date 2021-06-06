@@ -3,16 +3,16 @@ package ru.javawebinar.topjava.repository;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = getLogger(InMemoryMealRepository.class);
-    Map<Integer, Meal> repo = new HashMap<>();
+    Map<Integer, Meal> repo = new ConcurrentHashMap<>();
     private int id = 0;
 
     public InMemoryMealRepository() {
@@ -20,39 +20,24 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public synchronized boolean save(Meal meal) {
-        try {
-            log.debug("saving {} ", meal.getId());
-            meal.setId(++id);
-            repo.put(meal.getId(), meal);
-            return true;
-        } catch (Exception exception) {
-            log.error("error saving", exception);
-            return false;
-        }
+    public Meal save(Meal meal) {
+        meal.setId(++id);
+        log.debug("saving {} ", meal.getId());
+        repo.put(meal.getId(), meal);
+        return meal;
+
     }
 
     @Override
-    public boolean update(Meal meal) {
+    public Meal update(Meal meal) {
         log.debug("updating {}", meal.getId());
-        if (repo.containsKey(meal.getId())) {
-            repo.replace(meal.getId(), meal);
-            return true;
-        }
-        return false;
+        return repo.replace(meal.getId(), meal);
     }
 
 
     @Override
     public boolean delete(int id) {
-        if (repo.containsKey(id)) {
-            log.debug("delete {}", id);
-            repo.remove(id);
-        } else {
-            log.error("not found {}", id);
-            return false;
-        }
-        return true;
+        return repo.remove(id) != null;
     }
 
     @Override
@@ -63,9 +48,6 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public List<Meal> getAll() {
         log.debug("return all meals");
-        return repo.entrySet().stream()
-                .distinct()
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
+        return new ArrayList<>(repo.values());
     }
 }

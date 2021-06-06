@@ -32,7 +32,7 @@
         <input type="text" name="calories" value="<c:out value="${meal.calories}"/>">
         <br>
         <input type="submit" value="Submit">
-        <button onclick="window.history.back()" value="reset" name="button">Reset</button>
+        <button onclick="window.history.back()" value="cancel" name="cancelButton">Cancel</button>
     </form>
 </section>
 </body>

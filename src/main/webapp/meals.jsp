@@ -15,8 +15,9 @@
     <th></th>
     <th></th>
     <c:forEach items="${requestScope.mealList}" var="meals">
+        <%--https://stackoverflow.com/questions/35606551/jstl-localdatetime-format--%>
         <tr class="${meals.excess == true ? 'red' : 'green'}">
-            <fmt:parseDate value="${meals.dateTime}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+            <fmt:parseDate value="${meals.dateTime}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
             <td><fmt:formatDate value="${parsedDateTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
             <td>${meals.description}</td>
             <td>${meals.calories}</td>
