@@ -3,18 +3,8 @@
 <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
 
 <html>
-<style>
-    input {
-        margin-bottom: 6px;
-    }
-
-    b {
-        float: left;
-        width: 15%;
-        margin-top: 6px;
-    }
-</style>
 <head>
+    <link rel="stylesheet" href="css/style.css">
     <title>Edit</title>
 </head>
 <body>
