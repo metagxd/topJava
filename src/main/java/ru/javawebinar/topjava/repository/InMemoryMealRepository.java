@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = getLogger(InMemoryMealRepository.class);
     Map<Integer, Meal> repo = new ConcurrentHashMap<>();
-    private int id = 0;
+    private final AtomicInteger id = new AtomicInteger();
 
     public InMemoryMealRepository() {
 
@@ -21,7 +22,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal) {
-        meal.setId(++id);
+        meal.setId(id.getAndIncrement());
         log.debug("saving {} ", meal.getId());
         repo.put(meal.getId(), meal);
         return meal;
@@ -31,7 +32,8 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal update(Meal meal) {
         log.debug("updating {}", meal.getId());
-        return repo.replace(meal.getId(), meal);
+        repo.replace(meal.getId(), meal);
+        return meal;
     }
 
 

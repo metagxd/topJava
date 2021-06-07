@@ -12,7 +12,7 @@
 <section>
     <form method="post">
         <input type="hidden" name="id" value="<c:out value="${meal.id}"/>">
-        <b>First Name</b>
+        <b>DateTime</b>
         <input type="datetime-local" name="dateTime" value="<c:out value="${meal.dateTime}"/>">
         <br>
         <b>Description</b>
