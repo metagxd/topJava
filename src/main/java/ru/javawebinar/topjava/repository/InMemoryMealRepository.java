@@ -22,7 +22,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal) {
-        meal.setId(id.getAndIncrement());
+        meal.setId(id.incrementAndGet());
         log.debug("saving {} ", meal.getId());
         repo.put(meal.getId(), meal);
         return meal;
