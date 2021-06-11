@@ -16,10 +16,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Controller
 public class MealRestController {
+    private static final Logger log = getLogger(MealRestController.class);
+    private final int userId = SecurityUtil.authUserId();
     @Autowired
     private MealService service;
-    private final int userId = SecurityUtil.authUserId();
-    private static final Logger log = getLogger(MealRestController.class);
 
     public void create(Meal meal) {
         log.info("create new meal userId: {}", userId);
