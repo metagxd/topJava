@@ -4,13 +4,12 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -34,7 +33,7 @@ public class InMemoryMealRepository implements MealRepository {
                 userMealMap.replace(meal.getId(), meal);
                 return meal;
             } else {
-                throw  new NotFoundException("User ID: " + userId + " Meal ID: " + meal.getId());
+                return null;
             }
         }
     }
@@ -53,21 +52,17 @@ public class InMemoryMealRepository implements MealRepository {
         Map<Integer, Meal> userMealMap = repository.get(userId);
         if (userMealMap != null) {
             return userMealMap.get(mealId);
-        } else {
-            throw new NotFoundException("User ID: " + userId + " Meal ID: " + mealId);
         }
+        return null;
     }
 
     @Override
     public Collection<Meal> getAll(int userId) {
         Map<Integer, Meal> userMealMap = repository.get(userId);
         if (userMealMap != null) {
-            return repository.get(userId).values().stream()
-                    .parallel()
-                    .sorted(Comparator.comparing(Meal::getDateTime, Comparator.reverseOrder()))
-                    .collect(Collectors.toList());
+            return repository.get(userId).values();
         } else {
-            return Collections.emptyList();
+            return null;
         }
     }
 }
