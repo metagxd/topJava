@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -7,12 +8,14 @@ import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
 public class MealService {
 
+    @Autowired
     private MealRepository repository;
 
     public void create(int userId, Meal meal) {
@@ -36,7 +39,7 @@ public class MealService {
     public Collection<Meal> getAll(int userId) {
         Collection<Meal> meals = repository.getAll(userId);
         if (meals == null) {
-            throw new NotFoundException("Not found meals fo user: " + userId);
+            return Collections.emptyList();
         } else {
             return meals
                     .stream().parallel()
