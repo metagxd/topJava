@@ -18,22 +18,22 @@ public class MealService {
     @Autowired
     private MealRepository repository;
 
-    public void create(int userId, Meal meal) {
-        repository.save(userId, meal);
+    public void create(Meal meal, int userId) {
+        repository.save(meal, userId);
     }
 
-    public void update(int userId, Meal meal) {
-        if (repository.save(userId, meal) == null) {
+    public void update(Meal meal, int userId) {
+        if (repository.save(meal, userId) == null) {
             throw new NotFoundException("User ID: " + userId + " Meal ID: " + meal.getId());
         }
     }
 
-    public void delete(int userId, int mealId) {
-        ValidationUtil.checkNotFound(repository.delete(userId, mealId), String.valueOf(mealId));
+    public void delete(int mealId, int userId) {
+        ValidationUtil.checkNotFound(repository.delete(mealId, userId), String.valueOf(mealId));
     }
 
-    public Meal get(int userId, int mealId) {
-        return ValidationUtil.checkNotFound(repository.get(userId, mealId), "User ID: " + userId + " Meal ID: " + mealId);
+    public Meal get(int mealId, int userId) {
+        return ValidationUtil.checkNotFound(repository.get(mealId, userId), "User ID: " + userId + " Meal ID: " + mealId);
     }
 
     public Collection<Meal> getAll(int userId) {

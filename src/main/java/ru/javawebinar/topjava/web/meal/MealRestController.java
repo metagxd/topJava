@@ -23,22 +23,22 @@ public class MealRestController {
 
     public void create(Meal meal) {
         log.info("create new meal userId: {}", userId);
-        service.create(userId, meal);
+        service.create(meal, userId);
     }
 
     public void delete(int mealId) {
         log.info("delete meal {} userId: {}", mealId, userId);
-        service.delete(userId, mealId);
+        service.delete(mealId, userId);
     }
 
     public Meal get(int mealId) {
         log.info("get meal {}, userId {}", mealId, userId);
-        return service.get(userId, mealId);
+        return service.get(mealId, userId);
     }
 
     public void update(Meal meal, int mealId) {
         log.info("update meal {}, userId: {}", mealId, userId);
-        service.update(userId, meal);
+        service.update(meal, userId);
     }
 
     public List<MealTo> getAll() {
