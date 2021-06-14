@@ -9,10 +9,7 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -36,7 +33,8 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        return repository.remove(id).getId() == id;
+        Optional<User> optionalUser = Optional.ofNullable(repository.remove(id));
+        return optionalUser.isPresent() && optionalUser.get().getId() == id;
     }
 
     @Override
