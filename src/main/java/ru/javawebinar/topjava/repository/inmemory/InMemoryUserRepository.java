@@ -71,6 +71,6 @@ public class InMemoryUserRepository implements UserRepository {
         return repository.values().stream()
                 .parallel()
                 .filter(user -> user.getEmail().equals(email))
-                .findFirst().orElseThrow(() -> new NotFoundException(email));
+                .findFirst().orElse(null);
     }
 }
