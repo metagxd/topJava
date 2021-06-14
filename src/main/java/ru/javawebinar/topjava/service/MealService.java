@@ -8,9 +8,6 @@ import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 @Service
 public class MealService {
@@ -37,14 +34,6 @@ public class MealService {
     }
 
     public Collection<Meal> getAll(int userId) {
-        Collection<Meal> meals = repository.getAll(userId);
-        if (meals == null) {
-            return Collections.emptyList();
-        } else {
-            return meals
-                    .stream().parallel()
-                    .sorted(Comparator.comparing(Meal::getDateTime, Comparator.reverseOrder()))
-                    .collect(Collectors.toList());
-        }
+        return repository.getAll(userId);
     }
 }

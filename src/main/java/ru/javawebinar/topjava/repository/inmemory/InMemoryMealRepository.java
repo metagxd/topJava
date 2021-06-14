@@ -7,9 +7,12 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -26,15 +29,10 @@ public class InMemoryMealRepository implements MealRepository {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             userMealMap.put(meal.getId(), meal);
-            repository.merge(userId, userMealMap, (userMealMapOld, userMealMapNew) -> userMealMapOld = userMealMapNew);
+            repository.put(userId, userMealMap);
             return meal;
         } else {
-            if (userMealMap.containsKey(meal.getId())) {
-                userMealMap.replace(meal.getId(), meal);
-                return meal;
-            } else {
-                return null;
-            }
+            return userMealMap.computeIfPresent(meal.getId(), (k, v) -> v = meal);
         }
     }
 
@@ -60,9 +58,12 @@ public class InMemoryMealRepository implements MealRepository {
     public Collection<Meal> getAll(int userId) {
         Map<Integer, Meal> userMealMap = repository.get(userId);
         if (userMealMap != null) {
-            return repository.get(userId).values();
+            return userMealMap.values().stream()
+                    .parallel()
+                    .sorted(Comparator.comparing(Meal::getDateTime, Comparator.reverseOrder()))
+                    .collect(Collectors.toList());
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 }
