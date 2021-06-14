@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.ValidationUtil;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.Collection;
 
@@ -20,9 +19,7 @@ public class MealService {
     }
 
     public void update(Meal meal, int userId) {
-        if (repository.save(meal, userId) == null) {
-            throw new NotFoundException("User ID: " + userId + " Meal ID: " + meal.getId());
-        }
+        ValidationUtil.checkNotFound(repository.save(meal, userId), "User ID: " + userId + " Meal ID: " + meal.getId());
     }
 
     public void delete(int mealId, int userId) {
