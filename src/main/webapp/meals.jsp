@@ -23,6 +23,15 @@
     <h2>Meals</h2>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
+    <hr/>
+    <form method="post">
+        From date: <input type="date" name="dateFrom">
+        To Date: <input type="date" name="dateTo">
+        From time: <input type="time" name="timeFrom">
+        To time: <input type="time" name="timeTo">
+        <input type="submit" name="filter" value="Filter">
+    </form>
+    <hr/>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
