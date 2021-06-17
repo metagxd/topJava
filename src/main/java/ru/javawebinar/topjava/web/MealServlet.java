@@ -100,10 +100,6 @@ public class MealServlet extends HttpServlet {
 
     private <T> T parseOrNull(String parameterName, HttpServletRequest request, Function<String, T> function) {
         String parameter = request.getParameter(parameterName);
-        if (parameter.isEmpty()) {
-            return null;
-        } else {
-            return function.apply(request.getParameter(parameterName));
-        }
+        return parameter.isEmpty() ? null : function.apply(parameter);
     }
 }
