@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.function.Function;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
@@ -41,13 +41,11 @@ public class MealServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String filter = request.getParameter("filter");
         if (filter != null) {
-            String dateFrom = getParameterOrNull("dateFrom", request).orElse(LocalDate.MIN.toString());
-            String dateTo = getParameterOrNull("dateTo", request).orElse(LocalDate.MAX.toString());
-            String timeFrom = getParameterOrNull("timeFrom", request).orElse(LocalTime.MIN.toString());
-            String timeTo = getParameterOrNull("timeTo", request).orElse(LocalTime.MAX.toString());
-            request.setAttribute("meals",
-                    mealRestController.getAllFiltered(LocalDate.parse(dateFrom), LocalDate.parse(dateTo),
-                            LocalTime.parse(timeFrom), LocalTime.parse(timeTo)));
+            LocalDate dateFrom = parseOrNull("dateFrom", request, LocalDate::parse);
+            LocalDate dateTo = parseOrNull("dateTo", request, LocalDate::parse);
+            LocalTime timeFrom = parseOrNull("timeFrom", request, LocalTime::parse);
+            LocalTime timeTo = parseOrNull("timeTo", request, LocalTime::parse);
+            request.setAttribute("meals", mealRestController.getAllFiltered(dateFrom, dateTo, timeFrom, timeTo));
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
         } else {
             String id = request.getParameter("id");
@@ -106,8 +104,12 @@ public class MealServlet extends HttpServlet {
         return Integer.parseInt(paramId);
     }
 
-    private Optional<String> getParameterOrNull(String s, HttpServletRequest request) {
-        return Optional.ofNullable(request.getParameter(s)
-                .isEmpty() ? null : request.getParameter(s));
+    private <T> T parseOrNull(String parameterName, HttpServletRequest request, Function<String, T> function) {
+        String parameter = request.getParameter(parameterName);
+        if (parameter.isEmpty()) {
+            return null;
+        } else {
+            return function.apply(request.getParameter(parameterName));
+        }
     }
 }

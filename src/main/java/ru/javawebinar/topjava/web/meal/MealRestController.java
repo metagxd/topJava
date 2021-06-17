@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
@@ -54,10 +53,9 @@ public class MealRestController {
 
     public List<MealTo> getAllFiltered(LocalDate fromDate, LocalDate toDate, LocalTime fromTime, LocalTime toTime) {
         log.info("get all filtered for user {}", authUserId());
-        List<Meal> meals = new ArrayList<>(service.getAll(authUserId()));
-        return MealsUtil.getFilteredTos(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY, fromTime, toTime).stream()
-                .filter(mealTo -> mealTo.getDateTime().toLocalDate().compareTo(fromDate) >= 0
-                        && mealTo.getDateTime().toLocalDate().compareTo(toDate) <= 0)
-                .collect(Collectors.toList());
+        List<Meal> meals = new ArrayList<>(service.getFilteredByDate(authUserId(), fromDate == null
+                ? LocalDate.MIN : fromDate, toDate == null ? LocalDate.MAX : toDate));
+        return MealsUtil.getFilteredTos(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY, fromTime == null
+                ? LocalTime.MIN : fromTime, toTime == null ? LocalTime.MAX : toTime);
     }
 }
