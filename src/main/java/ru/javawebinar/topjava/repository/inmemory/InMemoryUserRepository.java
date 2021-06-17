@@ -8,9 +8,11 @@ import ru.javawebinar.topjava.model.AbstractNamedEntity;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -34,8 +36,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        Optional<User> optionalUser = Optional.ofNullable(repository.remove(id));
-        return optionalUser.isPresent() && optionalUser.get().getId() == id;
+        return repository.remove(id) != null;
     }
 
     @Override
@@ -44,11 +45,11 @@ public class InMemoryUserRepository implements UserRepository {
         if (user.isNew()) {
             user.setId(id.incrementAndGet());
             repository.put(user.getId(), user);
-            return user;
         } else {
             log.info("update {}", user);
-            return repository.replace(user.getId(), user);
+            repository.replace(user.getId(), user);
         }
+        return user;
     }
 
     @Override
