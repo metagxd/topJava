@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -57,22 +58,24 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Collection<Meal> getAll(int userId) {
+        return getAllFiltered(userId, meal->true);
+    }
+
+    @Override
+    public Collection<Meal> getFilteredByDate(int userId, LocalDate fromDate, LocalDate toDate) {
+        return getAllFiltered(userId, meal -> meal.getDateTime().toLocalDate().compareTo(fromDate) >= 0
+                && meal.getDateTime().toLocalDate().compareTo(toDate) <= 0);
+    }
+
+    private Collection<Meal> getAllFiltered(int userId, Predicate<Meal> filter) {
         Map<Integer, Meal> userMealMap = repository.get(userId);
         if (userMealMap != null) {
             return userMealMap.values().stream()
+                    .filter(filter)
                     .sorted(Comparator.comparing(Meal::getDateTime, Comparator.reverseOrder()))
                     .collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }
     }
-
-    @Override
-    public Collection<Meal> getFilteredByDate(int userId, LocalDate fromDate, LocalDate toDate) {
-        return getAll(userId).stream()
-                .filter(meal -> meal.getDateTime().toLocalDate().compareTo(fromDate) >= 0
-                        && meal.getDateTime().toLocalDate().compareTo(toDate) <= 0)
-                .collect(Collectors.toList());
-    }
 }
-
