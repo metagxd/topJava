@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({
@@ -41,6 +43,11 @@ public class MealServiceTest {
     @Test
     public void get() {
         assertMatch(DEFAULT_MEAL, mealService.get(100004, USER_ID));
+    }
+
+    @Test
+    public void getNotFound() {
+        Assert.assertThrows(NotFoundException.class, () -> mealService.get(100015, USER_ID));
     }
 
     @Test
@@ -79,8 +86,20 @@ public class MealServiceTest {
     }
 
     @Test
+    public void updateNotFound() {
+        Assert.assertThrows(NotFoundException.class, () -> mealService.update(UPDATED_MEAL, ADMIN_ID));
+    }
+
+    @Test
     public void create() {
         Meal actual = mealService.create(NEW_MEAL, USER_ID);
         assertMatch(actual, mealService.get(actual.getId(), USER_ID));
+    }
+
+    @Test
+    public void createDuplicate() {
+        Meal meal = mealService.get(100004, USER_ID);
+        meal.setId(null);
+        Assert.assertThrows(DataAccessException.class, () -> mealService.create(meal, USER_ID));
     }
 }
