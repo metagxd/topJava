@@ -32,7 +32,6 @@ CREATE TABLE meals
     date_time   TIMESTAMP WITHOUT TIME ZONE     NOT NULL,
     description TEXT,
     calories    INTEGER             DEFAULT 100 NOT NULL,
-    UNIQUE (user_id, date_time),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX  ON meals (user_id, date_time);

@@ -15,7 +15,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +41,7 @@ public class MealServiceTest {
 
     @Test
     public void get() {
-        assertMatch(DEFAULT_MEAL, mealService.get(100004, USER_ID));
+        assertMatch(DINNER_MEAL_USER, mealService.get(100004, USER_ID));
     }
 
     @Test
@@ -52,16 +51,16 @@ public class MealServiceTest {
 
     @Test
     public void delete() {
-        mealService.delete(DEFAULT_MEAL.getId(), USER_ID);
-        Assert.assertThrows(NotFoundException.class, () -> mealService.get(DEFAULT_MEAL.getId(), USER_ID));
+        mealService.delete(DINNER_MEAL_USER.getId(), USER_ID);
+        Assert.assertThrows(NotFoundException.class, () -> mealService.get(DINNER_MEAL_USER.getId(), USER_ID));
     }
 
     @Test
     public void getBetweenInclusive() {
         List<Meal> expected = new ArrayList<>(Arrays.asList(
-                new Meal(100004, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
-                new Meal(100003, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 15), "Обед", 1000),
-                new Meal(100002, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500)
+                DINNER_MEAL_USER,
+                LUNCH_MEAL_USER,
+                BREAKFAST_MEAL_USER
         ));
         List<Meal> actual = mealService.getBetweenInclusive(LocalDate.of(2020, Month.JANUARY, 30), LocalDate.of(2020, Month.JANUARY, 30), USER_ID);
         MealTestData.assertMatch(actual, expected);
@@ -70,10 +69,10 @@ public class MealServiceTest {
     @Test
     public void getAll() {
         List<Meal> expected = new ArrayList<>(Arrays.asList(
-                new Meal(100005, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 500),
-                new Meal(100004, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
-                new Meal(100003, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 15), "Обед", 1000),
-                new Meal(100002, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500)
+                BREAKFAST_MEAL_USER_NEXT_DAY,
+                DINNER_MEAL_USER,
+                LUNCH_MEAL_USER,
+                BREAKFAST_MEAL_USER
         ));
         List<Meal> actual = mealService.getAll(USER_ID);
         MealTestData.assertMatch(actual, expected);
@@ -99,7 +98,7 @@ public class MealServiceTest {
     @Test
     public void createDuplicate() {
         Meal meal = mealService.get(100004, USER_ID);
-        meal.setId(null);
+        makeNew(meal);
         Assert.assertThrows(DataAccessException.class, () -> mealService.create(meal, USER_ID));
     }
 }
