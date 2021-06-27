@@ -12,6 +12,7 @@ public class MealTestData {
 
     public static final Meal UPDATED_MEAL = new Meal(100003, LocalDateTime.of(2021, Month.FEBRUARY, 1, 15, 0), "updated meal", 505);
     public static final Meal NEW_MEAL = new Meal(LocalDateTime.of(2020, Month.FEBRUARY, 1, 15, 0), "new meal", 1000);
+    public static final Meal SAVED_NEW_MEAL = new Meal(100_008, LocalDateTime.of(2020, Month.FEBRUARY, 1, 15, 0), "new meal", 1000);
     public static final Meal BREAKFAST_MEAL_USER = new Meal(100_002, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
     public static final Meal LUNCH_MEAL_USER = new Meal(100_003, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 15), "Обед", 1000);
     public static final Meal DINNER_MEAL_USER = new Meal(100_004, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500);

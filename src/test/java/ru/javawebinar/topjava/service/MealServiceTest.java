@@ -92,7 +92,7 @@ public class MealServiceTest {
     @Test
     public void create() {
         Meal actual = mealService.create(NEW_MEAL, USER_ID);
-        assertMatch(actual, mealService.get(actual.getId(), USER_ID));
+        assertMatch(actual, SAVED_NEW_MEAL);
     }
 
     @Test
