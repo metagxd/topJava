@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Stopwatch;
@@ -37,30 +38,29 @@ public class MealServiceTest {
     private MealService service;
 
     private static final Logger logger = LoggerFactory.getLogger(MealServiceTest.class);
+    private static final StringBuilder testDurations = new StringBuilder();
 
-    private static void logInfo(Description description, String status, long nanos) {
+    private static void logInfo(long nanos, Description description) {
         String testName = description.getMethodName();
-        logger.info(String.format(
-                "\n================================================================================"
-                        + "\nTest %s %s, spent %d microseconds" +
-                        "\n================================================================================",
-                testName, status, TimeUnit.NANOSECONDS.toMicros(nanos)));
+        String format = String.format("\nTest %s finished, spent %d ms", testName, TimeUnit.NANOSECONDS.toMillis(nanos));
+        logger.info(format);
+        testDurations.append(format);
     }
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
 
         @Override
-        protected void failed(long nanos, Throwable e, Description description) {
-            logInfo(description, "failed", nanos);
+        protected void finished(long nanos, Description description) {
+            logInfo(nanos, description);
         }
-
-        @Override
-        protected void succeeded(long nanos, Description description) {
-            logInfo(description, "succeeded", nanos);
-        }
-
     };
+
+    @AfterClass
+    public static void afterClass() {
+        logger.info(testDurations.toString());
+    }
+
 
     @Test
     public void delete() {
