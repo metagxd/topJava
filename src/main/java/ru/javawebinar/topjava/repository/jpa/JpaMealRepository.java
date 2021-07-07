@@ -34,7 +34,7 @@ public class JpaMealRepository implements MealRepository {
             try {
                 referenceMeal = entityManager.getReference(Meal.class, meal.getId());
             } catch (EntityNotFoundException exception) {
-                throw new NotFoundException("Meal " + meal.getId() + " not found");
+                return null;
             }
             if (referenceMeal.getUser().getId() != userId) {
                 return null;
