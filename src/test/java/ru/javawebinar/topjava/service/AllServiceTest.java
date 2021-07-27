@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -12,5 +13,6 @@ import org.junit.runners.Suite;
         JdbcUserServiceTest.class,
         JpaUserServiceTest.class
 })
+@Ignore
 public class AllServiceTest {
 }

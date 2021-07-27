@@ -49,7 +49,6 @@ public abstract class AbstractMealServiceTest {
             String result = String.format("\n%-25s %7d", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
             results.append(result);
             log.info(result + " ms\n");
-            results = new StringBuilder();
         }
     };
 
@@ -63,6 +62,7 @@ public abstract class AbstractMealServiceTest {
                 "\n---------------------------------" +
                 results +
                 "\n---------------------------------");
+        results = new StringBuilder();
     }
 
     @Test
