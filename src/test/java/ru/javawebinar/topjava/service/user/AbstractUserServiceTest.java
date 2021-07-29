@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.user;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -21,6 +21,7 @@ import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.List;
