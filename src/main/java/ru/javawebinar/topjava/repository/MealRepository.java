@@ -20,4 +20,9 @@ public interface MealRepository {
 
     // ORDERED dateTime desc
     List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId);
+
+    //implementation only in DataJpaMealRepository.class
+    default Meal getWithUser(int id, int userId){
+        throw new UnsupportedOperationException();
+    }
 }

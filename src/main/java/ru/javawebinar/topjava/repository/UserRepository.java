@@ -18,4 +18,9 @@ public interface UserRepository {
     User getByEmail(String email);
 
     List<User> getAll();
+
+    //implementation only in DataJpaUserRepository.class
+    default User getWithMeal(int id) {
+        throw new UnsupportedOperationException();
+    }
 }
