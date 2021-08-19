@@ -8,11 +8,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -42,7 +47,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
+    public User save(@NotNull User user) {
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
@@ -58,12 +63,12 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean delete(@Min(100_000) int id) {
         return jdbcTemplate.update("DELETE FROM users WHERE id=?", id) != 0;
     }
 
     @Override
-    public User get(int id) {
+    public User get(@Min(100_000) int id) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
         User user = DataAccessUtils.singleResult(users);
         if (user == null) {
@@ -74,7 +79,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public User getByEmail(String email) {
+    public User getByEmail(@Email String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         User user = DataAccessUtils.singleResult(users);
@@ -90,12 +95,12 @@ public class JdbcUserRepository implements UserRepository {
                 "u.id ORDER BY u.name, u.email", ROW_MAPPER);
     }
 
-    private int insertRoles(int userId, Set<Role> roles) {
+    private int insertRoles(@Min(100_000) int userId, @NotBlank Set<Role> roles) {
         removeRoles(userId);
         List<Role> rolesList = new ArrayList<>(roles);
         int[] rows = jdbcTemplate.batchUpdate("INSERT INTO user_roles (user_id, role) values (?, ?)", new BatchPreparedStatementSetter() {
             @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
+            public void setValues(@NonNull PreparedStatement ps, int i) throws SQLException {
                 ps.setInt(1, userId);
                 ps.setString(2, rolesList.get(i).toString());
             }
