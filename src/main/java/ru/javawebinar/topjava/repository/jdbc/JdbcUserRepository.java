@@ -13,11 +13,8 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.util.ValidationUtil;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,7 +44,8 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public User save(@NotNull User user) {
+    public User save(User user) {
+        ValidationUtil.validate(user);
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
@@ -63,12 +61,12 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean delete(@Min(100_000) int id) {
+    public boolean delete(int id) {
         return jdbcTemplate.update("DELETE FROM users WHERE id=?", id) != 0;
     }
 
     @Override
-    public User get(@Min(100_000) int id) {
+    public User get(int id) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
         User user = DataAccessUtils.singleResult(users);
         if (user == null) {
@@ -79,7 +77,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public User getByEmail(@Email String email) {
+    public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         User user = DataAccessUtils.singleResult(users);
@@ -95,7 +93,7 @@ public class JdbcUserRepository implements UserRepository {
                 "u.id ORDER BY u.name, u.email", ROW_MAPPER);
     }
 
-    private int insertRoles(@Min(100_000) int userId, @NotBlank Set<Role> roles) {
+    private int insertRoles(int userId, Set<Role> roles) {
         removeRoles(userId);
         List<Role> rolesList = new ArrayList<>(roles);
         int[] rows = jdbcTemplate.batchUpdate("INSERT INTO user_roles (user_id, role) values (?, ?)", new BatchPreparedStatementSetter() {
