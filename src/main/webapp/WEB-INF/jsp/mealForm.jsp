@@ -12,10 +12,7 @@
     <hr>
     <jsp:useBean id="action" type="java.lang.String" scope="request"/>
     <h2>
-    <c:choose>
-        <c:when test="${action=='create'}"><spring:message code="meal.create"/></c:when>
-        <c:otherwise><spring:message code="meal.update"/></c:otherwise>
-    </c:choose>
+        <spring:message code="${action=='create'?'meal.create':'meal.update'}"/>
     </h2>
 
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
