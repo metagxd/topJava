@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
@@ -49,19 +48,18 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     @Transactional
     public User save(User user) {
-        System.out.println(TransactionSynchronizationManager.isActualTransactionActive());
         ValidationUtil.validate(user);
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
+            insertRoles(user.id(), user.getRoles());
         } else if (namedParameterJdbcTemplate.update("""
                    UPDATE users SET name=:name, email=:email, password=:password,
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
-                """, parameterSource) == 0 && insertRoles(user.id(), user.getRoles()) == 0) {
+                """, parameterSource) == 0 & updateRoles(user.id(), user.getRoles()) == 0) {
             return null;
         }
-        insertRoles(user.id(), user.getRoles());
         return user;
     }
 
@@ -74,22 +72,14 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public User get(int id) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
-        User user = DataAccessUtils.singleResult(users);
-        if (user == null) {
-            return null;
-        }
-        user.setRoles(getRoles(user.id()));
-        return user;
+        return getSingleUserResultWithRoles(users);
     }
 
     @Override
     public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
-        User user = DataAccessUtils.singleResult(users);
-        assert user != null;
-        user.setRoles(getRoles(user.id()));
-        return user;
+        return getSingleUserResultWithRoles(users);
     }
 
     @Override
@@ -100,7 +90,6 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     private int insertRoles(int userId, Set<Role> roles) {
-        removeRoles(userId);
         List<Role> rolesList = new ArrayList<>(roles);
         int[] rows = jdbcTemplate.batchUpdate("INSERT INTO user_roles (user_id, role) values (?, ?)", new BatchPreparedStatementSetter() {
             @Override
@@ -117,17 +106,23 @@ public class JdbcUserRepository implements UserRepository {
         return Arrays.stream(rows).sum();
     }
 
-    private int removeRoles(int userId) {
-        return jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", userId);
+    private int updateRoles(int userId, Set<Role> roles) {
+        jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", userId);
+        return insertRoles(userId, roles);
     }
 
-    private List<Role> getRoles(int userId) {
-        return jdbcTemplate.query("SELECT * FROM user_roles WHERE user_id = ?", rs -> {
+    private User getSingleUserResultWithRoles(List<User> users) {
+        User user = DataAccessUtils.singleResult(users);
+        if (user == null) {
+            return null;
+        }
+        user.setRoles(jdbcTemplate.query("SELECT * FROM user_roles WHERE user_id = ?", rs -> {
             List<Role> roleList = new ArrayList<>();
             while (rs.next()) {
                 roleList.add(Role.valueOf(rs.getString("role")));
             }
             return roleList;
-        }, userId);
+        }, user.id()));
+        return user;
     }
 }
