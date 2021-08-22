@@ -57,8 +57,8 @@ public class ValidationUtil {
 
     public static <T> void validate(T object) {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
+        final Validator VALIDATOR = validatorFactory.getValidator();
+        Set<ConstraintViolation<T>> constraintViolations = VALIDATOR.validate(object);
         if (!constraintViolations.isEmpty()) {
             throw new ConstraintViolationException(constraintViolations);
         }
