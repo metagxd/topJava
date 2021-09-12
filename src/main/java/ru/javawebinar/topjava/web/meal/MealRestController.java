@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.web.meal;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -8,18 +10,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.DateTimeUtil;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = MealRestController.MEAL_REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class MealRestController extends AbstractMealController {
     static final String MEAL_REST_URL = "/rest/meals";
+
+    @Autowired(required = false)
+    ConversionService conversionService;
+
 
     @Override
     @GetMapping
@@ -58,33 +62,19 @@ public class MealRestController extends AbstractMealController {
 
     @GetMapping("/filter")
     public List<MealTo> getBetween(@RequestParam MultiValueMap<String, String> params) {
-        LocalDate parsedStartDate = parse("startDate", params);
-        LocalDate parsedEndDate = parse("endDate", params);
-        LocalTime parsedStartTime = parse("startTime", params);
-        LocalTime parsedEndTime = parse("endTime", params);
+        LocalDate parsedStartDate = getConvertedOrNull(params, "startDate", LocalDate.class);
+        LocalDate parsedEndDate = getConvertedOrNull(params, "endDate", LocalDate.class);
+        LocalTime parsedStartTime = getConvertedOrNull(params, "startTime", LocalTime.class);
+        LocalTime parsedEndTime = getConvertedOrNull(params, "endTime", LocalTime.class);
 
         return super.getBetween(parsedStartDate, parsedStartTime, parsedEndDate, parsedEndTime);
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T parse(String paramName, MultiValueMap<String, String> params) {
-        String param = params.getFirst(paramName);
-
-        if (param == null) {
+    private <T> T getConvertedOrNull(MultiValueMap<String, String> params, String paramName, Class<T> tClass) {
+        String value = params.getFirst(paramName);
+        if (value == null || value.isEmpty()) {
             return null;
         }
-        try {
-            if (paramName.contains("Time")) {
-                return (T) DateTimeUtil.parseLocalTime(param);
-            }
-            if (paramName.contains("Date")) {
-                return (T) DateTimeUtil.parseLocalDate(param);
-            }
-
-        } catch (DateTimeParseException e) {
-            return null;
-        }
-
-        return null;
+        return conversionService.convert(value, tClass);
     }
 }

@@ -13,11 +13,6 @@
        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
-<!--    <context:component-scan base-package="ru.javawebinar.**.repository.jpa"/>-->
-
-    <context:component-scan base-package="ru.javawebinar.topjava.repository.datajpa"/>
-    <jpa:repositories base-package="ru.javawebinar.topjava.repository.datajpa"/>
-
     <jdbc:initialize-database data-source="dataSource" enabled="${database.init}">
         <jdbc:script location="${jdbc.initLocation}"/>
         <jdbc:script encoding="utf-8" location="classpath:db/populateDB.sql"/>

@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web.meal;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -35,7 +36,8 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER_MEAL_TO.contentJson(mealTos));
+                .andExpect(result -> Assertions.assertEquals(mealTos,
+                        JsonUtil.readValues(result.getResponse().getContentAsString(), MealTo.class)));
     }
 
     @Test
@@ -76,13 +78,16 @@ class MealRestControllerTest extends AbstractControllerTest {
     void getBetween() throws Exception {
         String startTime = "14:00";
 
-        List<MealTo> tos = MealsUtil.filterByPredicate(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY, m -> m.getDateTime().toLocalTime().isAfter(LocalTime.parse(startTime)));
+        List<MealTo> tos = MealsUtil.filterByPredicate(meals,
+                MealsUtil.DEFAULT_CALORIES_PER_DAY,
+                m -> m.getDateTime().toLocalTime().isAfter(LocalTime.parse(startTime)));
 
         perform(MockMvcRequestBuilders.get(RES_MEAL_URL + "filter")
                 .queryParam("startTime", startTime)
                 .queryParam("endTime", ""))
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER_MEAL_TO.contentJson(tos));
+                .andExpect(result -> Assertions.assertEquals(tos,
+                        JsonUtil.readValues(result.getResponse().getContentAsString(), MealTo.class)));
     }
 }
