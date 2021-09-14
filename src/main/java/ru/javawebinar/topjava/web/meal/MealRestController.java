@@ -1,11 +1,9 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
@@ -20,10 +18,6 @@ import java.util.List;
 @RequestMapping(value = MealRestController.MEAL_REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class MealRestController extends AbstractMealController {
     static final String MEAL_REST_URL = "/rest/meals";
-
-    @Autowired(required = false)
-    ConversionService conversionService;
-
 
     @Override
     @GetMapping
@@ -61,20 +55,9 @@ public class MealRestController extends AbstractMealController {
     }
 
     @GetMapping("/filter")
-    public List<MealTo> getBetween(@RequestParam MultiValueMap<String, String> params) {
-        LocalDate parsedStartDate = getConvertedOrNull(params, "startDate", LocalDate.class);
-        LocalDate parsedEndDate = getConvertedOrNull(params, "endDate", LocalDate.class);
-        LocalTime parsedStartTime = getConvertedOrNull(params, "startTime", LocalTime.class);
-        LocalTime parsedEndTime = getConvertedOrNull(params, "endTime", LocalTime.class);
-
-        return super.getBetween(parsedStartDate, parsedStartTime, parsedEndDate, parsedEndTime);
+    public List<MealTo> getBetween(@RequestParam @Nullable LocalDate startDate, @RequestParam @Nullable LocalTime startTime,
+                                   @RequestParam @Nullable LocalDate endDate, @RequestParam @Nullable LocalTime endTime) {
+        return super.getBetween(startDate, startTime, endDate, endTime);
     }
 
-    private <T> T getConvertedOrNull(MultiValueMap<String, String> params, String paramName, Class<T> tClass) {
-        String value = params.getFirst(paramName);
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
-        return conversionService.convert(value, tClass);
-    }
 }

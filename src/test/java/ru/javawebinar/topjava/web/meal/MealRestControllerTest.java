@@ -82,9 +82,9 @@ class MealRestControllerTest extends AbstractControllerTest {
                 MealsUtil.DEFAULT_CALORIES_PER_DAY,
                 m -> m.getDateTime().toLocalTime().isAfter(LocalTime.parse(startTime)));
 
-        perform(MockMvcRequestBuilders.get(RES_MEAL_URL + "filter")
+        perform(MockMvcRequestBuilders.get(RES_MEAL_URL + "/filter")
                 .queryParam("startTime", startTime)
-                .queryParam("endTime", ""))
+                .queryParam("startDate", ""))
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(result -> Assertions.assertEquals(tos,
